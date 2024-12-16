@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+void worstFit(int blockSizes[], int m, int processSizes[], int n) {
+    // Array to store the block allocated to each process
+    int allocation[n];
+    for (int i = 0; i < n; i++) {
+        allocation[i] = -1; // Initialize all allocations to -1 (unallocated)
+    }
+
+    // Allocate memory to processes
+    for (int i = 0; i < n; i++) {
+        int worstIdx = -1;
+
+        // Find the largest (worst) block for the process
+        for (int j = 0; j < m; j++) {
+            if (blockSizes[j] >= processSizes[i]) {
+                if (worstIdx == -1 || blockSizes[j] > blockSizes[worstIdx]) {
+                    worstIdx = j;
+                }
+            }
+        }
+
+        // If a suitable block is found, allocate it to the process
+        if (worstIdx != -1) {
+            allocation[i] = worstIdx;              // Assign block index to the process
+            blockSizes[worstIdx] -= processSizes[i]; // Reduce the block size
+        }
+    }
+
+    // Print the results
+    printf("Process No.\tProcess Size\tBlock No.\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\t\t", i + 1, processSizes[i]);
+        if (allocation[i] != -1) {
+            printf("%d\n", allocation[i] + 1); // Output block number (1-based index)
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+}
+
+int main() {
+    // Example memory blocks and processes
+    int blockSizes[] = {100, 500, 200, 300, 600};
+    int processSizes[] = {212, 417, 112, 426};
+    int m = sizeof(blockSizes) / sizeof(blockSizes[0]); // Number of blocks
+    int n = sizeof(processSizes) / sizeof(processSizes[0]); // Number of processes
+
+    printf("Worst Fit Memory Allocation:\n");
+    worstFit(blockSizes, m, processSizes, n);
+
+    return 0;
+}
